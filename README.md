@@ -1,58 +1,173 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# KANG WILLY - Personal Branding Website
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modern, high-performance personal branding and portfolio website built with the TALL stack.
 
-## About Laravel
+![Tech Stack](https://img.shields.io/badge/Laravel-13-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
+![Filament](https://img.shields.io/badge/Filament-v4-F59E0B?style=for-the-badge&logo=laravel&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-v4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🏗️ System Architecture
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```mermaid
+graph TD
+    %% Entities
+    Visitor([👤 Web Visitor])
+    Admin([🔐 Administrator])
+    
+    %% Routing
+    Router(Laravel Routing & Middleware)
+    
+    %% Controllers & Handlers
+    PublicCtrl[Home & Blog Controllers]
+    Filament[Filament v4 Admin Panel]
+    
+    %% Frontend
+    Blade[Blade Views + Tailwind CSS v4]
+    Livewire[Livewire + Alpine.js]
+    
+    %% Services
+    Mail[Mailer Service]
+    DB[(SQLite Database)]
+    Storage[Local Public Storage]
+    
+    %% Connections
+    Visitor -->|GET / POST| Router
+    Admin -->|GET /admin| Router
+    
+    Router -->|Public Traffic| PublicCtrl
+    Router -->|Admin Traffic| Filament
+    
+    PublicCtrl --> Blade
+    Filament --> Livewire
+    
+    PublicCtrl -->|Rate-limited Contact Form| Mail
+    
+    Blade -.->|Reads| DB
+    Livewire -.->|CRUD| DB
+    
+    Filament -->|Uploads| Storage
+    Blade -.->|Displays| Storage
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## 🗄️ Database Schema
 
-## Contributing
+```mermaid
+erDiagram
+    USERS {
+        int id PK
+        string name
+        string email
+        string password
+        boolean is_admin "Access control for /admin"
+    }
+    
+    BLOG_POSTS {
+        int id PK
+        string title
+        string slug
+        text content "XSS-Sanitized HTML"
+        string featured_image
+        boolean is_published
+        datetime published_at
+        int views_count "Session-deduplicated"
+    }
+    
+    PORTFOLIOS {
+        int id PK
+        string title
+        text description
+        string image "Supports external URL & Uploads"
+        string url
+        string tech_stack
+        boolean is_published
+    }
+    
+    SERVICES {
+        int id PK
+        string title
+        text description
+        string icon "FontAwesome class"
+        decimal price
+        boolean is_published
+    }
+    
+    TESTIMONIALS {
+        int id PK
+        string client_name
+        string client_avatar
+        text content
+        int rating "1 to 5"
+        boolean is_published
+    }
+    
+    SETTINGS {
+        int id PK
+        string group "general, social, contact"
+        string key UK
+        text value
+    }
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    USERS ||--o{ BLOG_POSTS : manages
+    USERS ||--o{ PORTFOLIOS : manages
+    USERS ||--o{ SERVICES : manages
+    USERS ||--o{ TESTIMONIALS : manages
+    USERS ||--o{ SETTINGS : manages
+```
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## ✨ Key Features
 
-## Security Vulnerabilities
+- **Blazing Fast Frontend:** Server-side rendered Blade views styled with Vite + Tailwind CSS v4.
+- **Dynamic CMS Panel:** Fully featured admin dashboard powered by Filament v4.
+- **Security First:** 
+  - Stored XSS protection via `Symfony/HtmlSanitizer` for rich text content.
+  - Strict scope guards preventing draft leakage.
+  - Rate-limited (`throttle:5,1`) contact form.
+- **SEO & Accessibility Ready:** 
+  - Dynamic `sitemap.xml` and `robots.txt`.
+  - OpenGraph & Twitter meta tags auto-injected.
+  - ARIA attributes and screen-reader compliant (a11y).
+- **Global Dynamic Settings:** Site identity, emails, and social links are fully manageable from the admin panel (cached forever, auto-invalidated on update).
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 🚀 Installation & Setup
 
-## License
+1. **Clone & Install Dependencies**
+   ```bash
+   composer install
+   npm install
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+2. **Environment Setup**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+3. **Database & Storage**
+   ```bash
+   touch database/database.sqlite
+   php artisan migrate:fresh --seed
+   php artisan storage:link
+   ```
+
+4. **Build Frontend Assets**
+   ```bash
+   npm run build
+   ```
+
+5. **Serve**
+   ```bash
+   php artisan serve
+   ```
+
+## 🧪 Testing
+
+The application includes a comprehensive test suite (Unit & Feature tests) covering public pages, SEO routes, authorization, and contact form behavior.
+
+```bash
+php artisan test
+```
