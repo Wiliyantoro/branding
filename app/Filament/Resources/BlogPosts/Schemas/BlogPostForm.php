@@ -32,6 +32,7 @@ class BlogPostForm
                         FileUpload::make('featured_image')
                             ->label('Featured Image')
                             ->image()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
                             ->disk('public')
                             ->directory('blog')
                             ->visibility('public')

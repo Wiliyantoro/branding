@@ -25,3 +25,9 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# curl test artifacts
+cookie.txt
+
+# Graphify build artifacts & caches (regenerate with `graphify extract`)
+/graphify-out

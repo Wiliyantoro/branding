@@ -32,6 +32,7 @@ class TestimonialForm
                             ->label('Avatar')
                             ->image()
                             ->avatar()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
                             ->disk('public')
                             ->directory('avatars')
                             ->visibility('public')

@@ -43,6 +43,7 @@ class PortfolioForm
                         FileUpload::make('image')
                             ->label('Cover Image')
                             ->image()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
                             ->disk('public')
                             ->directory('portfolio')
                             ->visibility('public')
