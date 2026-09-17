@@ -31,3 +31,6 @@ cookie.txt
 
 # Graphify build artifacts & caches (regenerate with `graphify extract`)
 /graphify-out
+
+# Git credentials (do not commit)
+.git-credentials
