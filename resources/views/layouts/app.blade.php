@@ -9,7 +9,7 @@
     <link rel="canonical" href="{{ url()->current() }}">
 
     {{-- Brand favicon: KW hex-keystone mark (generated in logo_work/) --}}
-    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') . '?v='.config('app.key') }}">
     <link rel="apple-touch-icon" href="{{ asset('favicon.ico') }}">
 
     {{-- Open Graph / Twitter --}}
