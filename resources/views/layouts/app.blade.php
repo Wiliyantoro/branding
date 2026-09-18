@@ -8,6 +8,10 @@
     <meta name="keywords" content="web developer, vibe coding, fullstack, laravel, javascript">
     <link rel="canonical" href="{{ url()->current() }}">
 
+    {{-- Brand favicon: KW hex-keystone mark (generated in logo_work/) --}}
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="apple-touch-icon" href="{{ asset('favicon.ico') }}">
+
     {{-- Open Graph / Twitter --}}
     <meta property="og:type" content="@yield('og_type', 'website')">
     <meta property="og:site_name" content="{{ $siteName }}">
