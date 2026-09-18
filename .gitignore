@@ -34,3 +34,6 @@ cookie.txt
 
 # Git credentials (do not commit)
 .git-credentials
+
+# Brand asset workspace (dev scratch, not shipped)
+/logo_work/
