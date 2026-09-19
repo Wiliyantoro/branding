@@ -10,12 +10,14 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\UrlInput;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
+use Filament\Pages\Actions;
 use Filament\Pages\Page;
 use App\Models\Setting;
 
 class SiteSettings extends Page
 {
-    protected static string $routeName = 'settings.show';
+    protected static ?string $slug = 'settings';
 
     protected static ?string $title = 'Site Settings';
 
@@ -140,6 +142,19 @@ class SiteSettings extends Page
             Setting::set($key, $value);
         }
 
-        session()->flash('status', 'Settings saved successfully.');
+        Notification::make()
+            ->title('Settings saved successfully.')
+            ->success()
+            ->send();
+    }
+
+    protected function getFormActions(): array
+    {
+        return [
+            Actions\Action::make('save')
+                ->label('Save Settings')
+                ->submit('save')
+                ->keyBindings(['mod+s']),
+        ];
     }
 }
