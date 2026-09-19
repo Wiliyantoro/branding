@@ -5,25 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', $siteName.' - '.$siteTagline)</title>
     <meta name="description" content="@yield('description', $siteDescription)">
-    <meta name="keywords" content="web developer, vibe coding, fullstack, laravel, javascript">
+    <meta name="keywords" content="{{ $metaKeywords ?: 'web developer, vibe coding, fullstack, laravel, javascript' }}">
     <link rel="canonical" href="{{ url()->current() }}">
 
-    {{-- Brand favicon: KW hex-keystone mark (generated in logo_work/) --}}
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') . '?v='.config('app.key') }}">
-    <link rel="apple-touch-icon" href="{{ asset('favicon.ico') }}">
+    {{-- Dynamic favicon from setting, fallback ke asset('favicon.ico') --}}
+    @php
+        $faviconUrl = $faviconSetting
+            ? asset('storage/' . $faviconSetting)
+            : asset('favicon.ico');
+        $faviconVersion = $faviconUrl . '?v=' . config('app.key');
+    @endphp
+    <link rel="icon" type="image/x-icon" href="{{ $faviconVersion }}">
+    <link rel="apple-touch-icon" href="{{ $faviconUrl }}">
 
     {{-- Open Graph / Twitter --}}
+    @php
+        $ogImageUrl = $ogImage
+            ? asset('storage/' . $ogImage)
+            : asset('favicon.ico');
+    @endphp
     <meta property="og:type" content="@yield('og_type', 'website')">
     <meta property="og:site_name" content="{{ $siteName }}">
     <meta property="og:title" content="@yield('title', $siteName.' - '.$siteTagline)">
     <meta property="og:description" content="@yield('description', $siteDescription)">
     <meta property="og:url" content="{{ url()->current() }}">
-    @hasSection('og_image')
-        <meta property="og:image" content="@yield('og_image')">
-        <meta name="twitter:card" content="summary_large_image">
-    @else
-        <meta name="twitter:card" content="summary">
-    @endif
+    <meta property="og:image" content="{{ $ogImageUrl }}">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="@yield('title', $siteName.' - '.$siteTagline)">
     <meta name="twitter:description" content="@yield('description', $siteDescription)">
 

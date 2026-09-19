@@ -33,6 +33,10 @@ class AppServiceProvider extends ServiceProvider
                 'siteDescription' => $settings['site_description'] ?? '',
                 'siteEmail' => $settings['email'] ?? null,
                 'siteLocation' => $settings['location'] ?? null,
+                'footerText' => $settings['footer_text'] ?? null,
+                'metaKeywords' => $settings['meta_keywords'] ?? null,
+                'ogImage' => $settings['og_image'] ?? null,
+                'faviconSetting' => $settings['favicon'] ?? null,
                 'socials' => array_filter([
                     'github' => $settings['github'] ?? null,
                     'linkedin' => $settings['linkedin'] ?? null,

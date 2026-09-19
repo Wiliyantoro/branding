@@ -16,11 +16,20 @@ class BrandingSeeder extends Seeder
     {
         // Settings
         $settings = [
+            // Site Identity
             ['key' => 'site_name', 'value' => 'KANG WILLY', 'group' => 'general'],
             ['key' => 'site_tagline', 'value' => 'Vibe Coding', 'group' => 'general'],
             ['key' => 'site_description', 'value' => 'Web Developer | Building digital experiences with passion and precision.', 'group' => 'general'],
+            ['key' => 'footer_text', 'value' => '', 'group' => 'general'],
+            ['key' => 'meta_keywords', 'value' => '', 'group' => 'general'],
+            ['key' => 'og_image', 'value' => null, 'group' => 'general'],
+            ['key' => 'favicon', 'value' => null, 'group' => 'general'],
+            
+            // Contact
             ['key' => 'email', 'value' => 'ketutwiliyantoro@gmail.com', 'group' => 'contact'],
             ['key' => 'location', 'value' => 'Indonesia', 'group' => 'contact'],
+            
+            // Social
             ['key' => 'github', 'value' => 'https://github.com/', 'group' => 'social'],
             ['key' => 'linkedin', 'value' => 'https://linkedin.com/', 'group' => 'social'],
             ['key' => 'twitter', 'value' => 'https://twitter.com/', 'group' => 'social'],
