@@ -28,11 +28,11 @@ class SecurityHeaders
             if ($request->is('admin', 'admin/*')) {
                 $response->header('Content-Security-Policy',
                     "default-src 'self'; ".
-                    "script-src 'self' 'unsafe-eval' 'unsafe-inline'; ".
+                    "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://static.cloudflareinsights.com; ".
                     "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; ".
                     "font-src 'self' data: https://cdnjs.cloudflare.com; ".
                     "img-src 'self' data: https:; ".
-                    "connect-src 'self'; ".
+                    "connect-src 'self' https://cloudflareinsights.com; ".
                     "object-src 'none'; ".
                     "base-uri 'self'; ".
                     "form-action 'self';"
@@ -40,11 +40,11 @@ class SecurityHeaders
             } else {
                 $response->header('Content-Security-Policy',
                     "default-src 'self'; ".
-                    "script-src 'self' https://www.google.com https://www.gstatic.com; ".
+                    "script-src 'self' https://www.google.com https://www.gstatic.com https://static.cloudflareinsights.com; ".
                     "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; ".
                     "font-src 'self' https://cdnjs.cloudflare.com; ".
                     "img-src 'self' data: https:; ".
-                    "connect-src 'self' https://www.google.com; ".
+                    "connect-src 'self' https://www.google.com https://cloudflareinsights.com; ".
                     "frame-src https://www.google.com; ".
                     "object-src 'none'; ".
                     "base-uri 'self'; ".

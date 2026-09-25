@@ -27,11 +27,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Auto-detect base URL from current request — overrides APP_URL so the
-        // same container/instance works with any domain it receives traffic from.
-        // This is useful for containerized deployments serving multiple domains.
-        // Uncomment if you want to disable and always use APP_URL from .env
-        // $this->app['config']->set('app.url', \Illuminate\Support\Facades\Request::schemeAndHttpDomain());
+        // Behind the Cloudflare tunnel, TLS terminates at the edge and the origin
+        // sees plain HTTP — so Laravel/Livewire generate http:// URLs, which the
+        // browser then refuses to call from an https:// page (CSP connect-src 'self'
+        // is scheme-sensitive). Force https URL generation whenever APP_URL is https.
+        if (str_starts_with((string) config('app.url'), 'https://')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
 
         // Site identity + socials come from the settings table, not hardcoded markup.
         // Wildcards keep future public views covered without touching this list.
