@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Auto-maintenance after every `git pull` (merge).
+# Activate once per machine:  git config core.hooksPath .githooks
+# Note: does NOT run on `git pull --rebase` (that fires post-rewrite, not post-merge).
+# ponytail: assumes `php` (8.4) + `npm` on PATH — true on the armbian server.
+#           override php with PHP_BIN=/path/to/php if a box lacks it on PATH.
+set -e
+cd "$(git rev-parse --show-toplevel)"
+
+PHP_BIN="${PHP_BIN:-php}"
+
+# Files touched by the merge just applied.
+changed() { git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD; }
+
+"$PHP_BIN" artisan optimize:clear
+"$PHP_BIN" artisan filament:optimize-clear
+
+# Run migrations only when migration files changed in this pull.
+if changed | grep -q '^database/migrations/'; then
+  "$PHP_BIN" artisan migrate --force
+fi
+
+# Rebuild frontend only when sources/build config changed.
+if changed | grep -qE '^(resources/|package(-lock)?\.json|vite\.config)'; then
+  npm ci && npm run build
+fi
