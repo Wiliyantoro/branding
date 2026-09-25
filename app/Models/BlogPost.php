@@ -6,6 +6,7 @@ use App\Concerns\ResolvesMediaUrl;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 
@@ -23,6 +24,7 @@ class BlogPost extends Model
         'is_published',
         'published_at',
         'views_count',
+        'safe_content_html',
     ];
 
     protected $casts = [
@@ -47,18 +49,31 @@ class BlogPost extends Model
                 $post->published_at = now();
             }
         });
+
+        // Cache sanitized HTML proactively during save
+        static::saving(function (BlogPost $post) {
+            if ($post->isDirty('content')) {
+                $post->safe_content_html = app(HtmlSanitizerInterface::class)->sanitize((string) $post->content);
+            }
+        });
+
+        static::saved(fn () => Cache::forget('sitemap.urls'));
+        static::deleted(fn () => Cache::forget('sitemap.urls'));
     }
 
     /**
      * Body HTML with scripts/handlers stripped — the only form safe for {!! !!}.
-     * ponytail: sanitizes on read (protects rows already in the DB). Move to a
-     * saving() hook once the post volume makes per-request sanitizing measurable.
+     * Uses cached safe_content_html if available, falls back to runtime sanitization.
      */
     protected function safeContent(): Attribute
     {
-        return Attribute::get(
-            fn (): string => app(HtmlSanitizerInterface::class)->sanitize((string) $this->content)
-        )->shouldCache();
+        return Attribute::get(function (): string {
+            if (! blank($this->safe_content_html)) {
+                return $this->safe_content_html;
+            }
+            // Fallback for existing rows without cached safe HTML
+            return app(HtmlSanitizerInterface::class)->sanitize((string) $this->content);
+        })->shouldCache();
     }
 
     /**

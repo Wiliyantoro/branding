@@ -77,4 +77,55 @@ class ContactFormTest extends TestCase
         $response->assertSessionHasErrors(['name', 'subject', 'message']);
         $this->assertCount(0, $this->sentMessages());
     }
+
+    public function test_rate_limiting_triggers_after_max_attempts(): void
+    {
+        // throttle:5,1 — 5 attempts per minute allowed, 6th must be blocked.
+        for ($i = 0; $i < 5; $i++) {
+            $this->post('/contact', [
+                'name' => 'Budi',
+                'email' => 'budi@example.com',
+                'subject' => 'Proyek',
+                'message' => 'Pesan ke-'.$i,
+            ])->assertRedirect()->assertSessionHas('status');
+        }
+
+        // Clear mailbox to confirm 6th attempt is blocked before sending.
+        Mail::mailer()->getSymfonyTransport()->flush();
+
+        $response = $this->post('/contact', [
+            'name' => 'Budi',
+            'email' => 'budi@example.com',
+            'subject' => 'Proyek',
+            'message' => 'Pesan ke-6',
+        ]);
+
+        $response->assertStatus(429);
+        $this->assertCount(0, $this->sentMessages());
+    }
+
+    public function test_rate_limit_resets_after_window(): void
+    {
+        // Simulate time passing one full throttle window (60 seconds).
+        for ($i = 0; $i < 5; $i++) {
+            $this->post('/contact', [
+                'name' => 'Budi',
+                'email' => 'budi@example.com',
+                'subject' => 'Proyek',
+                'message' => 'Reset window test',
+            ]);
+        }
+
+        // Block until throttle window passes.
+        $this->travel(1)->hours();
+
+        $response = $this->post('/contact', [
+            'name' => 'Budi',
+            'email' => 'budi@example.com',
+            'subject' => 'Proyek',
+            'message' => 'After reset',
+        ]);
+
+        $response->assertRedirect()->assertSessionHas('status');
+    }
 }

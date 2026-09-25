@@ -37,6 +37,18 @@
         transform: translateY(-5px);
         box-shadow: 0 20px 40px rgb(0 0 0 / 0.1);
     }
+
+    /* Fade-in animation for lazy-loaded content */
+    .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .animate-on-scroll.is-visible {
+        opacity: 1;
+        transform: none;
+    }
 }
 
 /* Respect users who ask for less motion. */
@@ -45,5 +57,11 @@
     .card-hover:hover {
         transition: none;
         transform: none;
+    }
+
+    .animate-on-scroll {
+        opacity: 1;
+        transform: none;
+        transition: none;
     }
 }

@@ -28,6 +28,7 @@ class BlogPostForm
                             ->unique(ignoreRecord: true)
                             ->maxLength(255),
                         TextInput::make('category')
+                            ->maxLength(100)
                             ->placeholder('e.g., Tutorial, Tips, News'),
                         FileUpload::make('featured_image')
                             ->label('Featured Image')

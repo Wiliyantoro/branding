@@ -19,7 +19,14 @@ return new class extends Migration
             $table->boolean('is_published')->default(false);
             $table->timestamp('published_at')->nullable();
             $table->integer('views_count')->default(0);
+            $table->longText('safe_content_html')->nullable(); // Cached sanitized HTML
             $table->timestamps();
+
+            // Index optimizations for MySQL/PostgreSQL production environments
+            // SQLite ignores these but they help when migrating to a real database
+            $table->index(['is_published', 'published_at']);
+            $table->index('category');
+            $table->index('slug');
         });
     }
 

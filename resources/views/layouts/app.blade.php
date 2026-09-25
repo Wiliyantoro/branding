@@ -38,9 +38,39 @@
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @stack('styles')
-</head>
+    @php
+        // JSON-LD structured data — injects Organization markup sitewide
+        // and Article markup on blog pages (via @yield fallback in blog.show).
+    @endphp
+
+    <script type="application/ld+json">
+    {!! json_encode([
+        '@context' => 'https://schema.org',
+        '@type' => 'Organization',
+        'name' => $siteName,
+        'url' => config('app.url') ? rtrim(config('app.url'), '/') : request()->getSchemeAndHttpHost(),
+        'sameAs' => array_filter([
+            $socials['github'] ?? null,
+            $socials['linkedin'] ?? null,
+            $socials['twitter'] ?? null,
+            $socials['instagram'] ?? null,
+        ], fn ($url) => filter_var($url, FILTER_VALIDATE_URL)),
+        'logo' => $faviconSetting ? asset('storage/' . $faviconSetting) : asset('favicon.ico'),
+        'contactPoint' => $siteEmail ? [
+            [
+                '@type' => 'ContactPoint',
+                'email' => $siteEmail,
+                'contactType' => 'sales',
+                'availableLanguage' => ['Indonesian', 'English'],
+            ],
+        ] : null,
+    ]) !!}
+    </script>
+
+    {{-- Article schema for blog pages — yields from blog.show.blade.php --}}
+    @stack('json-ld')
+
+    </head>
 <body class="bg-gray-50 text-gray-900 antialiased font-sans">
 
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[60] focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow">
@@ -135,5 +165,23 @@
     </footer>
 
     @stack('scripts')
+
+    {{-- Lazy animation observer: fades in cards when scrolled into view --}}
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.animate-on-scroll').forEach(function (el) {
+            observer.observe(el);
+        });
+    });
+    </script>
 </body>
 </html>

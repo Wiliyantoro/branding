@@ -57,7 +57,8 @@ class PortfolioForm
                         TextInput::make('sort_order')
                             ->numeric()
                             ->minValue(0)
-                            ->default(0),
+                            ->default(0)
+                            ->helperText('Urutan tampilan di halaman utama'),
                     ])->columns(2),
             ]);
     }

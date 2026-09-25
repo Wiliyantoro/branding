@@ -37,3 +37,10 @@ cookie.txt
 
 # Brand asset workspace (dev scratch, not shipped)
 /logo_work/
+
+# Local tooling & audit artifacts (not shipped)
+/.claude/
+/composer.phar
+/composer-update.phar
+/lighthouse-report.json
+/public_static/

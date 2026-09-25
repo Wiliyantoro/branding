@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Concerns\Publishable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Service extends Model
 {
-    use HasFactory;
+    use HasFactory, Publishable;
 
     protected $fillable = [
         'icon',
@@ -23,14 +24,4 @@ class Service extends Model
         'price' => 'decimal:2',
         'is_published' => 'boolean',
     ];
-
-    public function scopePublished($query)
-    {
-        return $query->where('is_published', true);
-    }
-
-    public function scopeOrdered($query)
-    {
-        return $query->orderBy('sort_order')->orderBy('created_at', 'desc');
-    }
 }

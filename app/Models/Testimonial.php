@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\Publishable;
 use App\Concerns\ResolvesMediaUrl;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Testimonial extends Model
 {
-    use HasFactory, ResolvesMediaUrl;
+    use HasFactory, ResolvesMediaUrl, Publishable;
 
     protected $fillable = [
         'client_name',
@@ -30,15 +31,5 @@ class Testimonial extends Model
     protected function clientAvatarUrl(): Attribute
     {
         return Attribute::get(fn (): ?string => $this->mediaUrl($this->client_avatar));
-    }
-
-    public function scopePublished($query)
-    {
-        return $query->where('is_published', true);
-    }
-
-    public function scopeOrdered($query)
-    {
-        return $query->orderBy('sort_order')->orderBy('created_at', 'desc');
     }
 }

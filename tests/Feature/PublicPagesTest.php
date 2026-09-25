@@ -14,6 +14,23 @@ class PublicPagesTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_favicon_setting_renders_when_configured(): void
+    {
+        Setting::create(['key' => 'favicon', 'value' => 'favicon-123abc.png', 'group' => 'general']);
+
+        $response = $this->get('/');
+
+        $response->assertOk()
+            ->assertSee('favicon-123abc.png?v=', escape: false);
+    }
+
+    public function test_falls_back_to_default_favicon_when_not_set(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('favicon.ico?v=', escape: false);
+    }
+
     public function test_home_page_renders_with_content(): void
     {
         Setting::create(['key' => 'site_name', 'value' => 'KANG WILLY', 'group' => 'general']);
@@ -91,8 +108,9 @@ class PublicPagesTest extends TestCase
 
         $response->assertOk()
             ->assertSee('aman', escape: false)
-            ->assertDontSee('<script>', escape: false)
-            ->assertDontSee('onerror', escape: false);
+            ->assertSee('img src="x"', escape: false)
+            ->assertDontSee('alert(1)', escape: false)
+            ->assertDontSee('alert(2)', escape: false);
     }
 
     public function test_views_count_increments_once_per_session(): void

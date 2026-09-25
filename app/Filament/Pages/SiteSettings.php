@@ -27,6 +27,9 @@ class SiteSettings extends Page
 
     public function form(Form $form): Form
     {
+        // Load all settings once — avoids repeated Setting::get() cache lookups.
+        $settings = Setting::map();
+
         return $form->schema([
             Tabs::make('Settings')
                 ->tabs([
@@ -37,29 +40,29 @@ class SiteSettings extends Page
                                 ->label('Nama Situs')
                                 ->maxLength(100)
                                 ->placeholder('e.g., KANG WILLY')
-                                ->default(Setting::get('site_name')),
+                                ->default($settings['site_name'] ?? null),
                             TextInput::make('site_tagline')
                                 ->label('Tagline Situs')
                                 ->maxLength(200)
                                 ->placeholder('e.g., Vibe Coding')
-                                ->default(Setting::get('site_tagline')),
+                                ->default($settings['site_tagline'] ?? null),
                             Textarea::make('site_description')
                                 ->label('Deskripsi Situs')
                                 ->rows(3)
                                 ->maxLength(1000)
                                 ->placeholder('Deskripsi singkat tentang situs...')
-                                ->default(Setting::get('site_description')),
+                                ->default($settings['site_description'] ?? null),
                             Textarea::make('footer_text')
                                 ->label('Footer Text')
                                 ->rows(2)
                                 ->maxLength(500)
                                 ->placeholder('Teks untuk footer...')
-                                ->default(Setting::get('footer_text')),
+                                ->default($settings['footer_text'] ?? null),
                             TagsInput::make('meta_keywords')
                                 ->label('Meta Keywords')
                                 ->separator(',')
                                 ->placeholder('keyword1, keyword2, ...')
-                                ->default(Setting::get('meta_keywords')),
+                                ->default($settings['meta_keywords'] ?? null),
                             FileUpload::make('og_image')
                                 ->label('Open Graph Image')
                                 ->image()
@@ -69,7 +72,7 @@ class SiteSettings extends Page
                                 ->visibility('public')
                                 ->maxSize(2048)
                                 ->helperText('Image yang ditampilkan saat situs dibagikan di media sosial (maks 2MB)')
-                                ->default(Setting::get('og_image')),
+                                ->default($settings['og_image'] ?? null),
                             FileUpload::make('favicon')
                                 ->label('Favicon')
                                 ->image()
@@ -79,7 +82,7 @@ class SiteSettings extends Page
                                 ->visibility('public')
                                 ->maxSize(500)
                                 ->helperText('Ikon favicon situs (maks 500KB)')
-                                ->default(Setting::get('favicon')),
+                                ->default($settings['favicon'] ?? null),
                         ]),
                     Tab::make('Contact')
                         ->icon('heroicon-o-envelope')
@@ -89,12 +92,12 @@ class SiteSettings extends Page
                                 ->email()
                                 ->maxLength(100)
                                 ->placeholder('contact@example.com')
-                                ->default(Setting::get('email')),
+                                ->default($settings['email'] ?? null),
                             TextInput::make('location')
                                 ->label('Lokasi')
                                 ->maxLength(200)
                                 ->placeholder('Kota, Negara')
-                                ->default(Setting::get('location')),
+                                ->default($settings['location'] ?? null),
                         ]),
                     Tab::make('Social Media')
                         ->icon('heroicon-o-brain')
@@ -102,19 +105,19 @@ class SiteSettings extends Page
                             UrlInput::make('github')
                                 ->label('GitHub')
                                 ->placeholder('https://github.com/username')
-                                ->default(Setting::get('github')),
+                                ->default($settings['github'] ?? null),
                             UrlInput::make('linkedin')
                                 ->label('LinkedIn')
                                 ->placeholder('https://linkedin.com/in/username')
-                                ->default(Setting::get('linkedin')),
+                                ->default($settings['linkedin'] ?? null),
                             UrlInput::make('twitter')
                                 ->label('Twitter/X')
                                 ->placeholder('https://twitter.com/username')
-                                ->default(Setting::get('twitter')),
+                                ->default($settings['twitter'] ?? null),
                             UrlInput::make('instagram')
                                 ->label('Instagram')
                                 ->placeholder('https://instagram.com/username')
-                                ->default(Setting::get('instagram')),
+                                ->default($settings['instagram'] ?? null),
                         ]),
                 ]),
         ]);

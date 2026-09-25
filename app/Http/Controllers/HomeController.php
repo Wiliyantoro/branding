@@ -7,6 +7,7 @@ use App\Models\Portfolio;
 use App\Models\Service;
 use App\Models\Setting;
 use App\Models\Testimonial;
+use App\Services\RecaptchaService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -22,7 +23,7 @@ class HomeController extends Controller
         ]);
     }
 
-    public function contact(Request $request)
+    public function contact(Request $request, RecaptchaService $recaptcha)
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:100'],
@@ -30,6 +31,14 @@ class HomeController extends Controller
             'subject' => ['required', 'string', 'max:150'],
             'message' => ['required', 'string', 'max:5000'],
         ]);
+
+        // Verify reCAPTCHA token (fails gracefully in dev when keys not configured).
+        if (! $recaptcha->verify($request->input('g_recaptcha_response', ''))) {
+            return back()
+                ->withInput()
+                ->withErrors(['g_recaptcha_response' => 'Terima kasih atas verifikasi keamanan.'])
+                ->withFragment('contact');
+        }
 
         $to = Setting::get('email') ?: config('mail.from.address');
 

@@ -36,7 +36,7 @@
                         <span class="text-xs font-semibold text-primary-600 bg-primary-50 px-3 py-1 rounded-full">{{ $post->category }}</span>
                     @endif
                     <h2 class="text-xl font-bold mt-3 mb-2 text-gray-800">{{ $post->title }}</h2>
-                    <p class="text-gray-500 text-sm mb-4">{{ Str::limit($post->excerpt ?? strip_tags($post->content), 120) }}</p>
+                    <p class="text-gray-500 text-sm mb-4">{{ Str::limit($post->excerpt ?? strip_tags($post->safe_content), 120) }}</p>
                     <div class="flex items-center justify-between text-sm text-gray-400">
                         <span><i class="far fa-calendar mr-1" aria-hidden="true"></i> {{ optional($post->published_at)->format('d M Y') ?? '-' }}</span>
                         <span><i class="far fa-eye mr-1" aria-hidden="true"></i> {{ $post->views_count }} views</span>

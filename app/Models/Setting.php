@@ -48,10 +48,4 @@ class Setting extends Model
         );
     }
 
-    public static function getGroup(string $group): array
-    {
-        return static::where('group', $group)
-            ->pluck('value', 'key')
-            ->toArray();
-    }
 }

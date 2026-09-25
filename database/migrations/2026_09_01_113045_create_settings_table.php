@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
-            $table->string('group')->default('general');
+            $table->string('group')->default('general')->index();
             $table->string('key')->unique();
             $table->text('value')->nullable();
             $table->timestamps();

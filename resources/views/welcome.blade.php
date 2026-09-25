@@ -97,7 +97,7 @@
         @if($portfolios->count())
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($portfolios as $portfolio)
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm card-hover">
+            <div class="bg-white rounded-2xl overflow-hidden shadow-sm card-hover animate-on-scroll">
                 <div class="h-48 bg-gradient-to-br from-primary-100 to-purple-100 flex items-center justify-center">
                     @if($portfolio->image_url)
                         <img src="{{ $portfolio->image_url }}" alt="{{ $portfolio->title }}" class="w-full h-full object-cover" loading="lazy">
@@ -146,7 +146,7 @@
         @if($services->count())
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($services as $service)
-            <div class="p-8 bg-gray-50 rounded-2xl card-hover border border-gray-100">
+            <div class="p-8 bg-gray-50 rounded-2xl card-hover animate-on-scroll border border-gray-100">
                 <div class="w-14 h-14 bg-primary-100 rounded-xl flex items-center justify-center mb-6">
                     <i class="fas fa-{{ $service->icon ?? 'code'}} text-primary-600 text-xl"></i>
                 </div>
@@ -179,7 +179,7 @@
         @if($testimonials->count())
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($testimonials as $testimonial)
-            <div class="bg-white p-8 rounded-2xl shadow-sm card-hover">
+            <div class="bg-white p-8 rounded-2xl shadow-sm card-hover animate-on-scroll">
                 <div class="flex mb-4">
                     @for($i = 1; $i <= 5; $i++)
                         <i class="fas fa-star {{ $i <= $testimonial->rating ? 'text-yellow-400' : 'text-gray-200' }}"></i>
@@ -221,7 +221,7 @@
         @if($posts->count())
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($posts as $post)
-            <a href="{{ route('blog.show', $post->slug) }}" class="bg-gray-50 rounded-2xl overflow-hidden card-hover border border-gray-100">
+            <a href="{{ route('blog.show', $post->slug) }}" class="bg-gray-50 rounded-2xl overflow-hidden card-hover animate-on-scroll border border-gray-100">
                 <div class="h-48 bg-gradient-to-br from-primary-100 to-purple-100 flex items-center justify-center">
                     @if($post->featured_image_url)
                         <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}" class="w-full h-full object-cover" loading="lazy">
@@ -234,7 +234,7 @@
                         <span class="text-xs font-semibold text-primary-600 bg-primary-50 px-3 py-1 rounded-full">{{ $post->category }}</span>
                     @endif
                     <h3 class="text-xl font-bold mt-3 mb-2 text-gray-800">{{ $post->title }}</h3>
-                    <p class="text-gray-500 text-sm mb-4">{{ Str::limit($post->excerpt ?? strip_tags($post->content), 120) }}</p>
+                    <p class="text-gray-500 text-sm mb-4">{{ Str::limit($post->excerpt ?? strip_tags($post->safe_content), 120) }}</p>
                     <div class="flex items-center justify-between text-sm text-gray-400">
                         <span><i class="far fa-calendar mr-1" aria-hidden="true"></i> {{ optional($post->published_at)->format('d M Y') ?? '-' }}</span>
                         <span><i class="far fa-eye mr-1" aria-hidden="true"></i> {{ $post->views_count }} views</span>
@@ -370,6 +370,13 @@
                                 <p id="contact-message-error" class="mt-2 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
+
+                        {{-- reCAPTCHA v3: token injected via hidden input --}}
+                        <input type="hidden" name="g_recaptcha_response" id="g-recaptcha-response">
+                        @error('g_recaptcha_response')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+
                         <button type="submit"
                             class="w-full bg-primary-600 text-white py-3 rounded-lg hover:bg-primary-700 transition-all font-semibold shadow-lg shadow-primary-200">
                             Send Message <i class="fas fa-paper-plane ml-2" aria-hidden="true"></i>
@@ -380,5 +387,24 @@
         </div>
     </div>
 </section>
+
+@if(config('recaptcha.site_key'))
+<script src="https://www.google.com/recaptcha/api.js?render={{ config('recaptcha.site_key') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelector('#contact').addEventListener('submit', function (e) {
+            if (!document.getElementById('g-recaptcha-response').value) {
+                e.preventDefault();
+                grecaptcha.ready(function () {
+                    grecaptcha.execute('{{ config('recaptcha.site_key') }}', { action: 'contact' }).then(function (token) {
+                        document.getElementById('g-recaptcha-response').value = token;
+                        e.target.submit();
+                    });
+                });
+            }
+        });
+    });
+</script>
+@endif
 
 @endsection

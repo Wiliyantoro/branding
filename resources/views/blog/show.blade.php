@@ -1,11 +1,38 @@
 @extends('layouts.app')
 
 @section('title', $post->title.' - '.$siteName)
-@section('description', $post->excerpt ?? Str::limit(strip_tags($post->content), 160))
+@section('description', $post->excerpt ?? Str::limit(strip_tags($post->safe_content), 160))
 @section('og_type', 'article')
 @if($post->featured_image_url)
     @section('og_image', $post->featured_image_url)
 @endif
+
+@push('json-ld')
+<script type="application/ld+json">
+{!! json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'Article',
+    'headline' => $post->title,
+    'description' => $post->excerpt ?? Str::limit(strip_tags($post->safe_content), 160),
+    'image' => $post->featured_image_url ?? asset('favicon.ico'),
+    'author' => [
+        '@type' => 'Person',
+        'name' => $siteName,
+    ],
+    'publisher' => [
+        '@type' => 'Organization',
+        'name' => $siteName,
+        'logo' => [
+            '@type' => 'ImageObject',
+            'url' => $faviconSetting ? asset('storage/' . $faviconSetting) : asset('favicon.ico'),
+        ],
+    ],
+    'datePublished' => $post->published_at?->toIso8601String(),
+    'dateModified' => $post->updated_at->toIso8601String(),
+    'articleSection' => $post->category,
+]) !!}
+</script>
+@endpush
 
 @section('content')
 
