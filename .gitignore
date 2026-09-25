@@ -21,6 +21,7 @@
 /storage/*.key
 /storage/pail
 /vendor
+/.credential/PAT.txt
 _ide_helper.php
 Homestead.json
 Homestead.yaml
@@ -44,3 +45,7 @@ cookie.txt
 /composer-update.phar
 /lighthouse-report.json
 /public_static/
+
+# Credentials (never commit — repo is public)
+/.credential/
+/.credentian/
