@@ -38,7 +38,6 @@ class SitemapController extends Controller
         $body = implode("\n", [
             'User-agent: *',
             'Disallow: /admin',
-            'Disallow: /storage/',
             '',
             'Sitemap: '.route('sitemap'),
             '',
