@@ -8,6 +8,10 @@
     <meta name="keywords" content="{{ $metaKeywords ?: 'web developer, vibe coding, fullstack, laravel, javascript' }}">
     <link rel="canonical" href="{{ url()->current() }}">
 
+    {{-- Compiled Tailwind CSS + JS bundle (Vite). Served from /build on same origin. --}}
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+
     {{-- Dynamic favicon from setting, fallback ke asset('favicon.ico') --}}
     @php
         $faviconUrl = $faviconSetting
