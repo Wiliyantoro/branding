@@ -21,7 +21,6 @@
 /storage/*.key
 /storage/pail
 /vendor
-/.credential/PAT.txt
 _ide_helper.php
 Homestead.json
 Homestead.yaml
@@ -48,4 +47,5 @@ cookie.txt
 
 # Credentials (never commit — repo is public)
 /.credential/
-/.credentian/
+/.credential/PAT.txt
+/.credential/*.txt
