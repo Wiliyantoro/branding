@@ -7,6 +7,9 @@ use App\Services\RecaptchaService;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +23,28 @@ class AppServiceProvider extends ServiceProvider
             secretKey: config('recaptcha.secret_key'),
             minScore: (float) config('recaptcha.min_score'),
         ));
+
+        // --- HtmlSanitizer: allow structured formatting tags used by blog content ---
+        // Symfony default strips <ul>/<li>/<h3>/<a> because the default strategy is the
+        // minimal "basic" allowlist. Re-bind a config that keeps our rich-text tags but
+        // still blocks XSS (no <script>, no inline event handlers, no javascript: URIs).
+        // ponytail: only extend the static element allowlist — drop this block once
+        // HtmlSanitizerConfig gains a config('html-sanitizer') YAML wrapper.
+        $this->app->singleton(HtmlSanitizerInterface::class, function () {
+            $config = (new HtmlSanitizerConfig())
+                ->allowSafeElements()   // W3C safe-allowlist (strip dangerous tag+attrs)
+                ->allowLinkSchemes(['http', 'https', 'mailto'])
+                ->allowMediaSchemes(['http', 'https', 'data'])
+                ->allowRelativeLinks()
+                ->allowRelativeMedias();
+
+            // tags that survive allowSafeElements but need structural allowance for blog
+            foreach (['h3', 'ul', 'li', 'ol', 'a', 'blockquote', 'code', 'pre', 'br', 'span', 'div'] as $tag) {
+                $config = $config->allowElement($tag);
+            }
+
+            return new HtmlSanitizer($config);
+        });
     }
 
     /**
