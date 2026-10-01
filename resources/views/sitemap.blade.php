@@ -7,6 +7,12 @@
         <lastmod>{{ $url['lastmod'] }}</lastmod>
 @endisset
         <priority>{{ $url['priority'] }}</priority>
+@isset($url['image'])
+        <image:image>
+            <image:loc>{{ $url['image'] }}</image:loc>
+            <image:title>{{ $url['loc'] }}</image:title>
+        </image:image>
+@endisset
     </url>
 @endforeach
 </urlset>

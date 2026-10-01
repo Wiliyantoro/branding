@@ -17,11 +17,14 @@ class SitemapController extends Controller
                 ['loc' => route('blog.index'), 'priority' => '0.8'],
             ];
 
-            foreach (BlogPost::published()->ordered()->get(['slug', 'updated_at']) as $post) {
+            foreach (BlogPost::published()->ordered()->get(['slug', 'updated_at', 'featured_image']) as $post) {
                 $urls[] = [
                     'loc' => route('blog.show', $post->slug),
                     'lastmod' => $post->updated_at?->toAtomString(),
                     'priority' => '0.6',
+                    'image' => $post->featured_image
+                        ? 'https://info.kgwilly.my.id/storage/' . $post->featured_image
+                        : null,
                 ];
             }
 
