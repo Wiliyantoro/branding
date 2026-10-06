@@ -36,7 +36,8 @@ class AppServiceProvider extends ServiceProvider
                 ->allowLinkSchemes(['http', 'https', 'mailto'])
                 ->allowMediaSchemes(['http', 'https', 'data'])
                 ->allowRelativeLinks()
-                ->allowRelativeMedias();
+                ->allowRelativeMedias()
+                ->allowAttribute('href', 'a');  // keep hyperlinks on blog content
 
             // tags that survive allowSafeElements but need structural allowance for blog
             foreach (['h3', 'ul', 'li', 'ol', 'a', 'blockquote', 'code', 'pre', 'br', 'span', 'div'] as $tag) {
