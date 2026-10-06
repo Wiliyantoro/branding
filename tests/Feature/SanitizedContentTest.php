@@ -62,4 +62,22 @@ class SanitizedContentTest extends TestCase
         $this->assertStringContainsString('aman', $content);
         $this->assertStringNotContainsString('<script>', $content);
     }
+
+    public function test_safe_content_keeps_anchor_href_but_strips_javascript_scheme(): void
+    {
+        $post = BlogPost::create([
+            'title' => 'Nav Link Test',
+            'content' => '<a href="/blog/tutorial-html-2-teks-heading-paragraf-formatting">next</a> '
+                . '<a href="https://example.com">external</a> '
+                . '<a href="javascript:alert(1)">bad</a>',
+            'is_published' => true,
+            'published_at' => now(),
+        ]);
+
+        $safe = $post->fresh()->safe_content;
+        $this->assertStringContainsString('href="/blog/tutorial-html-2-teks-heading-paragraf-formatting"', $safe);
+        $this->assertStringContainsString('href="https://example.com"', $safe);
+        $this->assertStringNotContainsString('javascript:', $safe);
+        $this->assertStringContainsString('>bad</a>', $safe); // link kept, but scheme stripped
+    }
 }
