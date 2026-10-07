@@ -26,7 +26,18 @@
             <a href="{{ route('blog.show', $post->slug) }}" class="bg-gray-50 rounded-2xl overflow-hidden card-hover border border-gray-100">
                 <div class="h-48 bg-gradient-to-br from-primary-100 to-purple-100 flex items-center justify-center">
                     @if($post->featured_image_url)
-                        <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}" class="w-full h-full object-cover" loading="lazy">
+                        <picture>
+                            @php
+                                $fimg = $post->featured_image_url;
+                                $webp = str_starts_with($fimg, '/storage/')
+                                    ? preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $fimg)
+                                    : null;
+                            @endphp
+                            @if($webp && file_exists(public_path(ltrim($webp, '/'))))
+                                <source srcset="{{ $webp }}" type="image/webp">
+                            @endif
+                            <img src="{{ $fimg }}" alt="{{ $post->title }}" class="w-full h-full object-cover" loading="lazy">
+                        </picture>
                     @else
                         <i class="fas fa-newspaper text-4xl text-primary-300" aria-hidden="true"></i>
                     @endif

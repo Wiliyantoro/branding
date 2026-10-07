@@ -72,8 +72,9 @@
 <section class="py-12 bg-white">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <article class="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-600 prose-a:text-primary-600">
-            {{-- safe_content is sanitized in App\Models\BlogPost; never echo raw content here. --}}
-            {!! $post->safe_content !!}
+            {{-- safe_content is sanitized in App\Models\BlogPost; wrapped in <picture> so
+                 browsers get the .webp twin (smaller). Never echo raw content here. --}}
+            {!! \App\Support\ResponsiveImage::picture($post->safe_content) !!}
         </article>
     </div>
 </section>
