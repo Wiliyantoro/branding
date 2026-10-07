@@ -13,6 +13,26 @@
             <h1 class="text-5xl font-bold text-gray-900 mb-4">My Blog</h1>
             <p class="text-gray-500 max-w-2xl mx-auto">Thoughts, tutorials, and insights on web development and technology.</p>
         </div>
+
+        {{-- Search --}}
+        <div class="max-w-xl mx-auto mt-8">
+            <form action="{{ route('blog.index') }}" method="GET" role="search">
+                <div class="relative">
+                    <input type="search" name="q" value="{{ $q ?? '' }}" placeholder="Cari artikel (judul / kategori)…"
+                        aria-label="Cari artikel"
+                        class="w-full pl-5 pr-14 py-3.5 rounded-xl border border-gray-200 bg-white shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all outline-none">
+                    <button type="submit" class="absolute inset-y-0 right-0 flex items-center px-4 text-gray-500 hover:text-primary-600 transition-colors" aria-label="Cari">
+                        <i class="fas fa-search" aria-hidden="true"></i>
+                    </button>
+                </div>
+            </form>
+            @if(! empty($q))
+                <p class="text-center mt-3 text-sm text-gray-500">
+                    Menampilkan hasil untuk <strong>"{{ e($q) }}"</strong>
+                    <a href="{{ route('blog.index') }}" class="ml-2 text-primary-600 hover:underline">× reset</a>
+                </p>
+            @endif
+        </div>
     </div>
 </section>
 
@@ -61,8 +81,13 @@
         @else
         <div class="text-center py-20">
             <i class="fas fa-newspaper text-6xl text-gray-200 mb-6" aria-hidden="true"></i>
-            <h2 class="text-xl font-bold text-gray-400 mb-2">No blog posts yet</h2>
-            <p class="text-gray-400">Stay tuned for upcoming articles!</p>
+            @if(! empty($q))
+                <h2 class="text-2xl font-bold text-gray-400 mb-2">Tidak ada hasil untuk "{{ e($q) }}"</h2>
+                <p class="text-gray-400">Coba kata kunci lain, atau <a href="{{ route('blog.index') }}" class="text-primary-600 hover:underline">lihat semua artikel</a>.</p>
+            @else
+                <h2 class="text-2xl font-bold text-gray-400 mb-2">No blog posts yet</h2>
+                <p class="text-gray-400">Stay tuned for upcoming articles!</p>
+            @endif
         </div>
         @endif
     </div>

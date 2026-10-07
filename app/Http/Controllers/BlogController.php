@@ -7,11 +7,23 @@ use Illuminate\Http\Request;
 
 class BlogController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $posts = BlogPost::published()->ordered()->paginate(9);
+        $q = trim((string) $request->query('q', ''));
 
-        return view('blog.index', compact('posts'));
+        $posts = BlogPost::published()
+            ->when($q !== '', function ($query) use ($q): void {
+                $query->where(function ($query) use ($q): void {
+                    $query->where('title', 'like', "%{$q}%")
+                        ->orWhere('excerpt', 'like', "%{$q}%")
+                        ->orWhere('category', 'like', "%{$q}%");
+                });
+            })
+            ->ordered()
+            ->paginate(9)
+            ->withQueryString();
+
+        return view('blog.index', compact('posts', 'q'));
     }
 
     public function show(Request $request, string $slug)

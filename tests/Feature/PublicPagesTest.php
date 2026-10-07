@@ -125,4 +125,37 @@ class PublicPagesTest extends TestCase
 
         $this->assertSame(1, $post->fresh()->views_count);
     }
+
+    public function test_blog_search_filters_by_title_and_category(): void
+    {
+        BlogPost::create([
+            'title' => 'Panduan Laravel untuk Pemula', 'content' => '<p>a</p>',
+            'category' => 'Tutorial', 'is_published' => true, 'published_at' => now(),
+        ]);
+        BlogPost::create([
+            'title' => 'Tentang Vibe Coding', 'content' => '<p>b</p>',
+            'is_published' => true, 'published_at' => now(),
+        ]);
+        BlogPost::create([
+            'title' => 'Artikel Lain', 'content' => '<p>c</p>',
+            'is_published' => false,
+        ]);
+
+        // matches by title
+        $this->get('/blog?q=laravel')
+            ->assertOk()
+            ->assertSee('Panduan Laravel untuk Pemula')
+            ->assertDontSee('Tentang Vibe Coding');
+
+        // matches by category
+        $this->get('/blog?q=Tutorial')
+            ->assertOk()
+            ->assertSee('Panduan Laravel untuk Pemula')
+            ->assertDontSee('Tentang Vibe Coding');
+
+        // no results → empty-state message, drafts never match
+        $this->get('/blog?q=tidak-ada-xyz')
+            ->assertOk()
+            ->assertSee('Tidak ada hasil');
+    }
 }
