@@ -43,6 +43,21 @@ class ResponsiveImageTest extends TestCase
         $this->assertTrue($assert(ResponsiveImage::picture($html)));
     }
 
+    #[Test]
+    public function webp_variant_url_handles_absolute_and_relative(): void
+    {
+        $this->assertSame(
+            '/storage/blog/ai-circuit.webp',
+            ResponsiveImage::webpVariantUrl('/storage/blog/ai-circuit.jpg')
+        );
+        $this->assertSame(
+            'https://example.test/storage/blog/ai-circuit.webp',
+            ResponsiveImage::webpVariantUrl('https://example.test/storage/blog/ai-circuit.jpg')
+        );
+        $this->assertNull(ResponsiveImage::webpVariantUrl('https://example.com/x.jpg'));
+        $this->assertNull(ResponsiveImage::webpVariantUrl('/storage/blog/not-on-disk.jpg'));
+    }
+
     protected function setUp(): void
     {
         parent::setUp();

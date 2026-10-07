@@ -53,5 +53,24 @@ class ResponsiveImage
         $baseDir = dirname($relativeDir);
         return '/storage/'.$baseDir.'/'.$name.'.webp';
     }
+
+    /**
+     * Accept a featured-image URL that may be absolute (https://info.../storage/blog/x.jpg)
+     * or root-relative (/storage/blog/x.jpg) and return the WebP twin URL (same origin
+     * prefix preserved), or null when no twin exists. External (non-storage) URLs → null.
+     */
+    public static function webpVariantUrl(string $url): ?string
+    {
+        $scheme = '';
+        if (preg_match('~^(?P<scheme>https?://[^/]+)?(?P<path>/storage/[^?#]+\.(?:jpe?g|png))~i', $url, $m)) {
+            $scheme = $m['scheme'] ?? '';
+            $path = $m['path'];
+        } else {
+            return null;
+        }
+
+        $twin = self::webpSrcUrl($path);
+        return $twin === null ? null : $scheme.$twin;
+    }
 }
 
